@@ -1,0 +1,150 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { roomAPI } from '../services/api';
+import { Plus, X, Upload } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const ROOM_TYPES = ['single', 'double', 'suite', 'apartment', 'hostel', 'pg'];
+const AMENITY_OPTIONS = ['wifi', 'ac', 'kitchen', 'parking', 'tv', 'geyser', 'laundry', 'gym', 'security', 'furnished'];
+
+export default function AddRoom() {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({
+    title: '', price: '', location: '', description: '', roomType: 'apartment', amenities: [], images: [],
+  });
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    const errs = {};
+    if (!form.title || form.title.length < 3) errs.title = 'Title must be at least 3 characters';
+    if (!form.price || form.price <= 0) errs.price = 'Enter a valid price';
+    if (!form.location) errs.location = 'Location is required';
+    if (!form.description || form.description.length < 10) errs.description = 'Description must be at least 10 characters';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const toggleAmenity = (a) => {
+    setForm((prev) => ({
+      ...prev,
+      amenities: prev.amenities.includes(a)
+        ? prev.amenities.filter((x) => x !== a)
+        : [...prev.amenities, a],
+    }));
+  };
+
+  const addImageUrl = () => {
+    const url = prompt('Enter image URL:');
+    if (url?.trim()) setForm((prev) => ({ ...prev, images: [...prev.images, url.trim()] }));
+  };
+
+  const removeImage = (idx) => {
+    setForm((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== idx) }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setLoading(true);
+    try {
+      const payload = { ...form, price: Number(form.price) };
+      await roomAPI.create(payload);
+      toast.success('Room listed successfully! 🎉');
+      navigate('/my-rooms');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create room');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+      <h1 className="text-2xl font-bold text-dark mb-2">List a New Room</h1>
+      <p className="text-sm text-gray-warm mb-8">Fill in the details to publish your room on SettelInn.</p>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Title */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-1.5">Room Title</label>
+          <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
+            placeholder="e.g., Cozy Studio near Metro" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.title ? 'border-red-400' : 'border-gray-border'}`} />
+          {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
+        </div>
+
+        {/* Price + Type */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-dark mb-1.5">Price (₹/month)</label>
+            <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })}
+              placeholder="8500" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.price ? 'border-red-400' : 'border-gray-border'}`} />
+            {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-dark mb-1.5">Room Type</label>
+            <select value={form.roomType} onChange={(e) => setForm({ ...form, roomType: e.target.value })}
+              className="w-full px-4 py-2.5 text-sm border border-gray-border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+              {ROOM_TYPES.map((t) => <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-1.5">Location</label>
+          <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
+            placeholder="e.g., Andheri West, Mumbai" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.location ? 'border-red-400' : 'border-gray-border'}`} />
+          {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
+        </div>
+
+        {/* Description */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-1.5">Description</label>
+          <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
+            rows={4} placeholder="Describe the room, nearby landmarks, rules, etc."
+            className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none ${errors.description ? 'border-red-400' : 'border-gray-border'}`} />
+          {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}
+        </div>
+
+        {/* Amenities */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-2">Amenities</label>
+          <div className="flex flex-wrap gap-2">
+            {AMENITY_OPTIONS.map((a) => (
+              <button key={a} type="button" onClick={() => toggleAmenity(a)}
+                className={`px-3 py-1.5 text-sm rounded-full border transition-colors capitalize ${form.amenities.includes(a) ? 'bg-primary/10 border-primary text-primary' : 'border-gray-border text-gray-warm hover:border-gray-warm'}`}>
+                {a}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Images */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-2">Images</label>
+          <div className="flex flex-wrap gap-3">
+            {form.images.map((img, i) => (
+              <div key={i} className="relative w-24 h-20 rounded-lg overflow-hidden border border-gray-border group">
+                <img src={img} alt="" className="w-full h-full object-cover" />
+                <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={addImageUrl} className="w-24 h-20 border-2 border-dashed border-gray-border rounded-lg flex flex-col items-center justify-center text-gray-warm hover:border-primary hover:text-primary transition-colors">
+              <Upload className="w-5 h-5" />
+              <span className="text-[10px] mt-0.5">Add URL</span>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" disabled={loading}
+          className="w-full py-3 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          {loading ? 'Publishing...' : <><Plus className="w-4 h-4" /> Publish Room</>}
+        </button>
+      </form>
+    </div>
+  );
+}

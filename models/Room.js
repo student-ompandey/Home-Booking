@@ -1,5 +1,17 @@
 const mongoose = require("mongoose");
 
+/**
+ * Room Model — Production Grade
+ *
+ * Features:
+ * - Full-text search on title, location, description
+ * - Amenities array for filtering
+ * - Availability toggle
+ * - Compound indexes for common query patterns
+ * - Owner reference (User)
+ * - Timestamps (createdAt, updatedAt)
+ */
+
 const roomSchema = new mongoose.Schema(
   {
     title: {
@@ -26,11 +38,26 @@ const roomSchema = new mongoose.Schema(
     images: {
       type: [String],
       default: [],
+      validate: {
+        validator: (arr) => arr.length <= 10,
+        message: "Cannot have more than 10 images",
+      },
     },
     roomType: {
       type: String,
       required: [true, "Please provide a room type"],
-      enum: ["single", "double", "suite", "apartment", "hostel", "pg"],
+      enum: {
+        values: ["single", "double", "suite", "apartment", "hostel", "pg"],
+        message: "Room type must be one of: single, double, suite, apartment, hostel, pg",
+      },
+    },
+    amenities: {
+      type: [String],
+      default: [],
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -40,11 +67,24 @@ const roomSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
 
-// Index for faster queries
+// ─── Indexes ────────────────────────────────────────────────────
+
+// Text index for full-text search across title, location, description
+roomSchema.index(
+  { title: "text", location: "text", description: "text" },
+  { weights: { title: 10, location: 5, description: 1 } }
+);
+
+// Compound indexes for common filter+sort patterns
 roomSchema.index({ location: 1, price: 1 });
-roomSchema.index({ owner: 1 });
+roomSchema.index({ roomType: 1, price: 1 });
+roomSchema.index({ owner: 1, createdAt: -1 });
+roomSchema.index({ isAvailable: 1, createdAt: -1 });
+roomSchema.index({ price: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Room", roomSchema);

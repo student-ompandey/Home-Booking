@@ -1,7 +1,18 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const ApiError = require("../utils/ApiError");
 
-// Protect routes — verify JWT token
+/**
+ * Authentication Middleware — Production Grade
+ *
+ * protect: Verifies JWT access token from Authorization header.
+ * authorize: Restricts access to specific roles.
+ */
+
+/**
+ * Protect routes — verify JWT access token.
+ * Extracts token from "Authorization: Bearer <token>" header.
+ */
 const protect = async (req, res, next) => {
   let token;
 
@@ -13,41 +24,49 @@ const protect = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: "Not authorized — no token provided",
-    });
+    return next(ApiError.unauthorized("Not authorized — no token provided"));
   }
 
   try {
+    // Verify access token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = await User.findById(decoded.id);
 
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Not authorized — user not found",
-      });
+    // Attach user to request (exclude sensitive fields)
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return next(ApiError.unauthorized("Not authorized — user not found"));
     }
 
+    req.user = user;
     next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Not authorized — invalid token",
-    });
+    if (error.name === "TokenExpiredError") {
+      return next(ApiError.unauthorized("Token has expired — please refresh"));
+    }
+    return next(ApiError.unauthorized("Not authorized — invalid token"));
   }
 };
 
-// Authorize by role
+/**
+ * Authorize by role — restricts access to specific roles.
+ * Must be used AFTER the protect middleware.
+ *
+ * Usage: authorize("admin", "owner")
+ */
 const authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: `Role '${req.user.role}' is not authorized to access this route`,
-      });
+    if (!req.user) {
+      return next(ApiError.unauthorized("Not authorized"));
     }
+
+    if (!roles.includes(req.user.role)) {
+      return next(
+        ApiError.forbidden(
+          `Role '${req.user.role}' is not authorized to access this route`
+        )
+      );
+    }
+
     next();
   };
 };

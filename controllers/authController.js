@@ -1,93 +1,108 @@
-const User = require("../models/User");
+const AuthService = require("../services/authService");
+const asyncHandler = require("../utils/asyncHandler");
+
+/**
+ * Auth Controller — Thin controller layer.
+ * Delegates all business logic to AuthService.
+ */
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
-const register = async (req, res, next) => {
-  try {
-    const { name, email, password, role } = req.body;
+const register = asyncHandler(async (req, res) => {
+  const { user, accessToken, refreshToken } = await AuthService.register(
+    req.body
+  );
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: "User with this email already exists",
-      });
-    }
+  // Set refresh token in HTTP-only cookie
+  setRefreshTokenCookie(res, refreshToken);
 
-    // Create user
-    const user = await User.create({ name, email, password, role });
-
-    // Generate token
-    const token = user.generateToken();
-
-    res.status(201).json({
-      success: true,
-      message: "User registered successfully",
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  res.status(201).json({
+    success: true,
+    message: "User registered successfully",
+    data: { user, accessToken },
+  });
+});
 
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-const login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
+const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const { user, accessToken, refreshToken } = await AuthService.login(
+    email,
+    password
+  );
 
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Please provide email and password",
-      });
-    }
+  // Set refresh token in HTTP-only cookie
+  setRefreshTokenCookie(res, refreshToken);
 
-    // Find user and include password field
-    const user = await User.findOne({ email }).select("+password");
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
-    }
+  res.status(200).json({
+    success: true,
+    message: "Login successful",
+    data: { user, accessToken },
+  });
+});
 
-    // Check password
-    const isMatch = await user.matchPassword(password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid credentials",
-      });
-    }
+// @desc    Refresh access token
+// @route   POST /api/auth/refresh-token
+// @access  Public (requires valid refresh token)
+const refreshToken = asyncHandler(async (req, res) => {
+  // Get refresh token from cookie or body
+  const token = req.cookies?.refreshToken || req.body.refreshToken;
 
-    // Generate token
-    const token = user.generateToken();
+  const { accessToken, refreshToken: newRefreshToken } =
+    await AuthService.refreshToken(token);
 
-    res.status(200).json({
-      success: true,
-      message: "Login successful",
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  // Rotate refresh token cookie
+  setRefreshTokenCookie(res, newRefreshToken);
 
-module.exports = { register, login };
+  res.status(200).json({
+    success: true,
+    message: "Token refreshed successfully",
+    data: { accessToken },
+  });
+});
+
+// @desc    Logout user (current device)
+// @route   POST /api/auth/logout
+// @access  Private
+const logout = asyncHandler(async (req, res) => {
+  const token = req.cookies?.refreshToken || req.body.refreshToken;
+  await AuthService.logout(req.user._id, token);
+
+  // Clear refresh token cookie
+  res.clearCookie("refreshToken");
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
+});
+
+// @desc    Logout from all devices
+// @route   POST /api/auth/logout-all
+// @access  Private
+const logoutAll = asyncHandler(async (req, res) => {
+  await AuthService.logoutAll(req.user._id);
+
+  // Clear refresh token cookie
+  res.clearCookie("refreshToken");
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out from all devices",
+  });
+});
+
+// ─── Helper: Set Refresh Token Cookie ──────────────────────────
+function setRefreshTokenCookie(res, token) {
+  res.cookie("refreshToken", token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+}
+
+module.exports = { register, login, refreshToken, logout, logoutAll };
