@@ -70,11 +70,13 @@ export const userAPI = {
 // ─── Admin API ─────────────────────────────────────────────
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
+  getAnalytics: () => api.get('/admin/analytics'),
   getRooms: (params) => api.get('/admin/rooms', { params }),
   approveRoom: (id) => api.put(`/admin/rooms/${id}/approve`),
   rejectRoom: (id, reason) => api.put(`/admin/rooms/${id}/reject`, { reason }),
   deleteRoom: (id) => api.delete(`/admin/rooms/${id}`),
   getUsers: (params) => api.get('/admin/users', { params }),
+  toggleUserStatus: (id) => api.put(`/admin/users/${id}/toggle-status`),
 };
 
 export default api;

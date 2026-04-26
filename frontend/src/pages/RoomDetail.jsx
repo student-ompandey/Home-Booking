@@ -1,12 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { roomAPI } from '../services/api';
+import { roomAPI, chatAPI } from '../services/api';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
-import { Heart, MapPin, ArrowLeft, User, Calendar, Tag, Wifi, Wind, ChefHat, Car, Tv, ShowerHead } from 'lucide-react';
+import { Heart, MapPin, ArrowLeft, User, Calendar, Tag, Wifi, Wind, ChefHat, Car, Tv, ShowerHead, MessageCircle } from 'lucide-react';
 import Loader from '../components/ui/Loader';
 import toast from 'react-hot-toast';
 import ReviewSection from '../components/rooms/ReviewSection';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import L from 'leaflet';
+
+// Fix Leaflet icons
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
 
 const AMENITY_ICONS = {
   wifi: Wifi, ac: Wind, kitchen: ChefHat, parking: Car, tv: Tv, geyser: ShowerHead,
@@ -16,7 +26,7 @@ export default function RoomDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [room, setRoom] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -119,6 +129,27 @@ export default function RoomDetail() {
               </div>
             </div>
           )}
+
+          {/* Location Map */}
+          {room.coordinates && room.coordinates.lat && room.coordinates.lng && (
+            <div>
+              <h2 className="text-lg font-semibold text-dark mb-3">Location Map</h2>
+              <div className="h-64 rounded-2xl overflow-hidden border border-gray-border">
+                <MapContainer 
+                  center={[room.coordinates.lat, room.coordinates.lng]} 
+                  zoom={15} 
+                  scrollWheelZoom={false} 
+                  className="w-full h-full z-0"
+                >
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <Marker position={[room.coordinates.lat, room.coordinates.lng]} />
+                </MapContainer>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Sidebar — Booking Card */}
@@ -139,6 +170,25 @@ export default function RoomDetail() {
             >
               {room.isAvailable === false ? 'Currently Booked' : 'Book Now'}
             </button>
+
+            {/* Chat with Owner */}
+            {room.owner && room.owner._id !== user?._id && (
+              <button
+                onClick={async () => {
+                  if (!isAuthenticated) { navigate('/login'); return; }
+                  try {
+                    const { data } = await chatAPI.createChat({ ownerId: room.owner._id, roomId: room._id });
+                    navigate(`/chat/${data.data._id}`);
+                  } catch (err) {
+                    toast.error('Failed to start chat');
+                  }
+                }}
+                className="w-full mt-2 py-3 text-sm font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Chat with Owner
+              </button>
+            )}
 
             {/* Owner */}
             {room.owner && (

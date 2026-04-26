@@ -4,8 +4,9 @@ import { roomAPI } from '../services/api';
 import RoomCard from '../components/rooms/RoomCard';
 import RoomFilter from '../components/rooms/RoomFilter';
 import SearchBar from '../components/rooms/SearchBar';
+import RoomsMap from '../components/rooms/RoomsMap';
 import Loader from '../components/ui/Loader';
-import { ChevronLeft, ChevronRight, Frown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Frown, Map as MapIcon, Grid } from 'lucide-react';
 
 export default function Rooms() {
   const [searchParams] = useSearchParams();
@@ -13,6 +14,7 @@ export default function Rooms() {
   const [pagination, setPagination] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -74,13 +76,28 @@ export default function Rooms() {
         <RoomFilter filters={filters} onFilterChange={setFilters} />
       </div>
 
-      {/* Results Info */}
+      {/* Results Info & View Toggle */}
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-gray-warm">
           {pagination.total !== undefined ? (
             <>Showing <span className="font-medium text-dark">{rooms.length}</span> of <span className="font-medium text-dark">{pagination.total}</span> rooms</>
           ) : 'Loading...'}
         </p>
+
+        <div className="flex items-center bg-gray-light p-1 rounded-lg border border-gray-border">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'list' ? 'bg-white text-dark shadow-sm' : 'text-gray-warm hover:text-dark'}`}
+          >
+            <Grid className="w-4 h-4" /> List
+          </button>
+          <button
+            onClick={() => setViewMode('map')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${viewMode === 'map' ? 'bg-white text-dark shadow-sm' : 'text-gray-warm hover:text-dark'}`}
+          >
+            <MapIcon className="w-4 h-4" /> Map
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -98,14 +115,20 @@ export default function Rooms() {
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {rooms.map((room) => (
-              <RoomCard key={room._id} room={room} />
-            ))}
-          </div>
+          {viewMode === 'map' ? (
+            <div className="animate-fade-in">
+              <RoomsMap rooms={rooms} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
+              {rooms.map((room) => (
+                <RoomCard key={room._id} room={room} />
+              ))}
+            </div>
+          )}
 
           {/* Pagination */}
-          {pagination.pages > 1 && (
+          {pagination.pages > 1 && viewMode === 'list' && (
             <div className="flex items-center justify-center gap-2 mt-10">
               <button
                 onClick={() => setFilters({ ...filters, page: filters.page - 1 })}

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { roomAPI } from '../services/api';
 import { Plus, X, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
+import LocationPicker from '../components/rooms/LocationPicker';
 
 const ROOM_TYPES = ['single', 'double', 'suite', 'apartment', 'hostel', 'pg'];
 const AMENITY_OPTIONS = ['wifi', 'ac', 'kitchen', 'parking', 'tv', 'geyser', 'laundry', 'gym', 'security', 'furnished'];
@@ -12,6 +13,7 @@ export default function AddRoom() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     title: '', price: '', location: '', description: '', roomType: 'apartment', amenities: [], images: [],
+    coordinates: { lat: 28.6139, lng: 77.2090 } // Default Delhi
   });
   const [errors, setErrors] = useState({});
 
@@ -93,10 +95,20 @@ export default function AddRoom() {
 
         {/* Location */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-1.5">Location</label>
+          <label className="block text-sm font-medium text-dark mb-1.5">Location Name</label>
           <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
             placeholder="e.g., Andheri West, Mumbai" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.location ? 'border-red-400' : 'border-gray-border'}`} />
           {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
+        </div>
+
+        {/* Map Coordinates */}
+        <div>
+          <label className="block text-sm font-medium text-dark mb-1.5">Pin Exact Location</label>
+          <p className="text-xs text-gray-warm mb-3">Click on the map to set the exact location of your room.</p>
+          <LocationPicker 
+            position={form.coordinates} 
+            onChange={(coords) => setForm({ ...form, coordinates: coords })} 
+          />
         </div>
 
         {/* Description */}

@@ -1,7 +1,9 @@
 const Room = require("../models/Room");
 const User = require("../models/User");
+const Booking = require("../models/Booking");
 const ApiError = require("../utils/ApiError");
 const logger = require("../utils/logger");
+const { sendNotification } = require("./notificationService");
 
 /**
  * Admin Service — Business logic for admin dashboard operations.
@@ -13,7 +15,7 @@ class AdminService {
    * @returns {Object} stats
    */
   static async getStats() {
-    const [totalUsers, totalOwners, totalRooms, pendingRooms, approvedRooms, rejectedRooms] =
+    const [totalUsers, totalOwners, totalRooms, pendingRooms, approvedRooms, rejectedRooms, totalBookings] =
       await Promise.all([
         User.countDocuments({ role: "user" }),
         User.countDocuments({ role: "owner" }),
@@ -21,6 +23,7 @@ class AdminService {
         Room.countDocuments({ status: "pending" }),
         Room.countDocuments({ status: "approved" }),
         Room.countDocuments({ status: "rejected" }),
+        Booking.countDocuments(),
       ]);
 
     return {
@@ -30,6 +33,56 @@ class AdminService {
       pendingRooms,
       approvedRooms,
       rejectedRooms,
+      totalBookings,
+    };
+  }
+
+  /**
+   * Get analytics data for charts
+   * @returns {Object} analytics
+   */
+  static async getAnalytics() {
+    // 1. Monthly User Growth (Last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const userGrowth = await User.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // 2. Monthly Room Uploads (Last 6 months)
+    const roomUploads = await Room.aggregate([
+      { $match: { createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          count: { $sum: 1 },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+
+    // 3. Room Type Distribution
+    const roomTypes = await Room.aggregate([
+      {
+        $group: {
+          _id: "$type",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    return {
+      userGrowth: userGrowth.map((item) => ({ month: item._id, users: item.count })),
+      roomUploads: roomUploads.map((item) => ({ month: item._id, rooms: item.count })),
+      roomTypes: roomTypes.map((item) => ({ name: item._id, value: item.count })),
     };
   }
 
@@ -82,6 +135,14 @@ class AdminService {
     room.adminNote = null;
     await room.save();
 
+    // Notify the room owner
+    await sendNotification({
+      user: room.owner,
+      message: `Your room "${room.title}" has been approved and is now public!`,
+      type: "room_approved",
+      relatedId: room._id,
+    });
+
     logger.info(`Room approved: "${room.title}" (${roomId})`);
     return room;
   }
@@ -99,6 +160,14 @@ class AdminService {
     room.status = "rejected";
     room.adminNote = reason;
     await room.save();
+
+    // Notify the room owner
+    await sendNotification({
+      user: room.owner,
+      message: `Your room "${room.title}" was rejected. Reason: ${reason || "Not provided"}`,
+      type: "room_rejected",
+      relatedId: room._id,
+    });
 
     logger.info(`Room rejected: "${room.title}" (${roomId}) — ${reason || "No reason"}`);
     return room;
@@ -147,6 +216,23 @@ class AdminService {
         pages: Math.ceil(total / Number(limit)),
       },
     };
+  }
+
+  /**
+   * Toggle user active status (block/unblock)
+   * @param {string} userId
+   * @returns {Object} user
+   */
+  static async toggleUserStatus(userId) {
+    const user = await User.findById(userId);
+    if (!user) throw ApiError.notFound("User not found");
+    if (user.role === "admin") throw ApiError.forbidden("Cannot block another admin");
+
+    user.isActive = !user.isActive;
+    await user.save();
+
+    logger.info(`User status toggled: "${user.email}" (${userId}) -> active: ${user.isActive}`);
+    return user;
   }
 }
 

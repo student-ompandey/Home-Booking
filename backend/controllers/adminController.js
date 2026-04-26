@@ -13,6 +13,14 @@ const getStats = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: stats });
 });
 
+// @desc    Get dashboard analytics (charts data)
+// @route   GET /api/admin/analytics
+// @access  Private (admin only)
+const getAnalytics = asyncHandler(async (req, res) => {
+  const analytics = await AdminService.getAnalytics();
+  res.status(200).json({ success: true, data: analytics });
+});
+
 // @desc    Get all rooms (admin view with status filter)
 // @route   GET /api/admin/rooms
 // @access  Private (admin only)
@@ -53,4 +61,12 @@ const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, count: users.length, pagination, data: users });
 });
 
-module.exports = { getStats, getAllRooms, approveRoom, rejectRoom, deleteRoom, getAllUsers };
+// @desc    Toggle user active status
+// @route   PUT /api/admin/users/:id/toggle-status
+// @access  Private (admin only)
+const toggleUserStatus = asyncHandler(async (req, res) => {
+  const user = await AdminService.toggleUserStatus(req.params.id);
+  res.status(200).json({ success: true, message: "User status updated", data: user });
+});
+
+module.exports = { getStats, getAnalytics, getAllRooms, approveRoom, rejectRoom, deleteRoom, getAllUsers, toggleUserStatus };

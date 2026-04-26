@@ -2,6 +2,7 @@ const Review = require("../models/Review");
 const Room = require("../models/Room");
 const { createReviewSchema } = require("../validators/reviewValidator");
 const ApiError = require("../utils/ApiError");
+const { sendNotification } = require("../services/notificationService");
 
 /**
  * @desc    Add a review
@@ -34,11 +35,24 @@ const addReview = async (req, res, next) => {
     }
 
     const review = await Review.create({
+      user: req.user._id,
+      room: roomId,
       rating,
       comment,
-      room: roomId,
-      user: userId,
     });
+
+    // Populate user info for the response
+    await review.populate("user", "name");
+
+    // Notify the room owner
+    if (room.owner.toString() !== req.user._id.toString()) {
+      await sendNotification({
+        user: room.owner,
+        message: `${req.user.name} left a ${rating}-star review on your room "${room.title}".`,
+        type: "new_review",
+        relatedId: room._id,
+      });
+    }
 
     res.status(201).json({
       success: true,

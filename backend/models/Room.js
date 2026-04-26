@@ -30,6 +30,16 @@ const roomSchema = new mongoose.Schema(
       required: [true, "Please provide a location"],
       trim: true,
     },
+    coordinates: {
+      lat: {
+        type: Number,
+        required: [true, "Please provide latitude"],
+      },
+      lng: {
+        type: Number,
+        required: [true, "Please provide longitude"],
+      },
+    },
     description: {
       type: String,
       required: [true, "Please provide a description"],

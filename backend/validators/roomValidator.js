@@ -20,6 +20,16 @@ const createRoomSchema = Joi.object({
     "string.min": "Location must be at least 2 characters",
     "any.required": "Location is required",
   }),
+  coordinates: Joi.object({
+    lat: Joi.number().required().messages({
+      "any.required": "Latitude is required",
+    }),
+    lng: Joi.number().required().messages({
+      "any.required": "Longitude is required",
+    }),
+  }).required().messages({
+    "any.required": "Map coordinates are required",
+  }),
   description: Joi.string().trim().min(10).max(2000).required().messages({
     "string.min": "Description must be at least 10 characters",
     "string.max": "Description cannot exceed 2000 characters",
@@ -44,6 +54,10 @@ const updateRoomSchema = Joi.object({
   title: Joi.string().trim().min(3).max(100),
   price: Joi.number().min(0).max(1000000),
   location: Joi.string().trim().min(2).max(200),
+  coordinates: Joi.object({
+    lat: Joi.number(),
+    lng: Joi.number(),
+  }),
   description: Joi.string().trim().min(10).max(2000),
   images: Joi.array().items(Joi.string().uri()).max(10),
   roomType: Joi.string().valid(

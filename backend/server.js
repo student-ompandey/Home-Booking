@@ -5,6 +5,8 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const path = require("path");
+const http = require("http");
+const { Server } = require("socket.io");
 
 // Load environment variables FIRST — before any module reads process.env
 dotenv.config();
@@ -21,7 +23,11 @@ const roomRoutes = require("./routes/roomRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const chatRoutes = require("./routes/chatRoutes");
+const messageRoutes = require("./routes/messageRoutes");
 const seedAdmin = require("./config/seedAdmin");
+const { initSocket } = require("./services/notificationService");
 
 /**
  * ═══════════════════════════════════════════════════════════════
@@ -29,8 +35,16 @@ const seedAdmin = require("./config/seedAdmin");
  * ═══════════════════════════════════════════════════════════════
  */
 
-// ─── Initialize Express App ───────────────────────────────────
+// ─── Initialize Express App & Socket.io ───────────────────────
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    credentials: true,
+  },
+});
+initSocket(io);
 
 // ─── Connect to MongoDB + Seed Admin ─────────────────────────
 connectDB().then(() => seedAdmin());
@@ -100,6 +114,9 @@ app.use("/api/rooms", roomRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/notifications", notificationRoutes);
+app.use("/api/chats", chatRoutes);
+app.use("/api/messages", messageRoutes);
 
 // ─── 404 Handler ──────────────────────────────────────────────
 app.use((req, res) => {
@@ -127,7 +144,7 @@ const gracefulShutdown = (signal) => {
 
 // ─── Start Server ─────────────────────────────────────────────
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+server.listen(PORT, () => {
   logger.info(`\n🚀 Settel Inn server running on port ${PORT}`);
   logger.info(`📍 http://localhost:${PORT}`);
   logger.info(`🌍 Environment: ${process.env.NODE_ENV || "development"}\n`);

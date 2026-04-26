@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { adminAPI } from '../../services/api';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Lock, Unlock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const ROLE_BADGE = {
@@ -17,21 +17,39 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState(searchParams.get('role') || '');
   const [page, setPage] = useState(1);
+  const [actionLoading, setActionLoading] = useState(null);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const params = { page, limit: 20 };
+      if (roleFilter) params.role = roleFilter;
+      const { data } = await adminAPI.getUsers(params);
+      setUsers(data.data);
+      setPagination(data.pagination);
+    } catch { toast.error('Failed to load users'); }
+    finally { setLoading(false); }
+  };
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const params = { page, limit: 20 };
-        if (roleFilter) params.role = roleFilter;
-        const { data } = await adminAPI.getUsers(params);
-        setUsers(data.data);
-        setPagination(data.pagination);
-      } catch { toast.error('Failed to load users'); }
-      finally { setLoading(false); }
-    };
     fetchUsers();
   }, [roleFilter, page]);
+
+  const handleToggleStatus = async (id, currentStatus) => {
+    const action = currentStatus ? 'block' : 'unblock';
+    if (!confirm(`Are you sure you want to ${action} this user?`)) return;
+    
+    setActionLoading(id);
+    try {
+      await adminAPI.toggleUserStatus(id);
+      toast.success(`User ${action}ed successfully`);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || `Failed to ${action} user`);
+    } finally {
+      setActionLoading(null);
+    }
+  };
 
   return (
     <div className="animate-fade-in">
@@ -60,8 +78,9 @@ export default function AdminUsers() {
                 <tr className="bg-slate-50 border-b border-gray-border">
                   <th className="text-left px-4 py-3 font-semibold text-gray-warm">Name</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-warm">Email</th>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-warm">Role</th>
+                  <th className="text-left px-4 py-3 font-semibold text-gray-warm">Status</th>
                   <th className="text-left px-4 py-3 font-semibold text-gray-warm hidden md:table-cell">Joined</th>
+                  <th className="text-right px-4 py-3 font-semibold text-gray-warm">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-border">
@@ -79,8 +98,29 @@ export default function AdminUsers() {
                     <td className="px-4 py-3">
                       <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full capitalize ${ROLE_BADGE[u.role]}`}>{u.role}</span>
                     </td>
+                    <td className="px-4 py-3">
+                      <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${u.isActive !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                        {u.isActive !== false ? 'Active' : 'Blocked'}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-gray-warm text-xs hidden md:table-cell">
                       {new Date(u.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      {u.role !== 'admin' && (
+                        <button 
+                          onClick={() => handleToggleStatus(u._id, u.isActive !== false)}
+                          disabled={actionLoading === u._id}
+                          className={`p-1.5 rounded-lg transition-colors disabled:opacity-40 ${
+                            u.isActive !== false 
+                              ? 'text-red-500 hover:bg-red-50' 
+                              : 'text-emerald-500 hover:bg-emerald-50'
+                          }`}
+                          title={u.isActive !== false ? 'Block User' : 'Unblock User'}
+                        >
+                          {u.isActive !== false ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

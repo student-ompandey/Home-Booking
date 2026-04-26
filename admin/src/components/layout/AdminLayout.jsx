@@ -1,11 +1,13 @@
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { LayoutDashboard, Home, Users, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, Home, Users, LogOut, Shield, Search, Bell, Settings, Calendar, FileText } from 'lucide-react';
 
 const NAV_ITEMS = [
   { to: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/admin/rooms', icon: Home, label: 'Rooms' },
   { to: '/admin/users', icon: Users, label: 'Users' },
+  { to: '/admin/bookings', icon: Calendar, label: 'Bookings' },
+  { to: '/admin/reports', icon: FileText, label: 'Reports' },
 ];
 
 export default function AdminLayout() {
@@ -70,9 +72,37 @@ export default function AdminLayout() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto md:p-8 p-4 pt-16 md:pt-8">
-        <Outlet />
-      </main>
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Topbar (Desktop) */}
+        <header className="hidden md:flex items-center justify-between bg-white h-16 px-8 border-b border-gray-200 shrink-0 shadow-sm z-10">
+          <div className="flex items-center bg-slate-100 rounded-lg px-3 py-1.5 w-96">
+            <Search className="w-4.5 h-4.5 text-slate-400" />
+            <input 
+              type="text" 
+              placeholder="Search rooms, users, bookings..." 
+              className="bg-transparent border-none outline-none ml-2 text-sm w-full text-slate-700"
+            />
+          </div>
+          
+          <div className="flex items-center gap-5">
+            <button className="relative p-2 text-slate-500 hover:text-slate-800 transition-colors">
+              <Bell className="w-5 h-5" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
+            </button>
+            <div className="h-6 w-px bg-slate-200"></div>
+            <div className="flex items-center gap-3 cursor-pointer group">
+              <div className="w-8 h-8 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold border border-indigo-200 group-hover:ring-2 ring-indigo-100 transition-all">
+                {user?.name?.charAt(0) || 'A'}
+              </div>
+              <span className="text-sm font-medium text-slate-700">{user?.name || 'Admin'}</span>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-auto bg-slate-50 md:p-8 p-4 pt-16 md:pt-8">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

@@ -57,6 +57,10 @@ const userSchema = new mongoose.Schema(
       type: [String],
       select: false, // Never expose refresh tokens in queries
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true, // createdAt, updatedAt

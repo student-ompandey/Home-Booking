@@ -126,6 +126,8 @@ class AuthService {
 
     await User.findByIdAndUpdate(user._id, {
       $pull: { refreshTokens: refreshToken },
+    });
+    await User.findByIdAndUpdate(user._id, {
       $push: { refreshTokens: newRefreshToken },
     });
 

@@ -73,6 +73,27 @@ export const reviewAPI = {
   addReview: (data) => api.post('/reviews', data),
 };
 
+// ─── Notification API ──────────────────────────────────────
+export const notificationAPI = {
+  getAll: () => api.get('/notifications'),
+  markAsRead: (id) => api.put(`/notifications/${id}/read`),
+  markAllAsRead: () => api.put('/notifications/read-all'),
+};
+
+// ─── Chat API ──────────────────────────────────────────────
+export const chatAPI = {
+  getChats: () => api.get('/chats'),
+  createChat: (data) => api.post('/chats', data),
+};
+
+// ─── Message API ───────────────────────────────────────────
+export const messageAPI = {
+  getMessages: (chatId) => api.get(`/messages/${chatId}`),
+  sendMessage: (data) => api.post('/messages', data),
+  markMessageSeen: (id) => api.put(`/messages/${id}/seen`),
+  markChatMessagesSeen: (chatId) => api.put(`/messages/chat/${chatId}/seen`),
+};
+
 // ─── Admin API ─────────────────────────────────────────────
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
