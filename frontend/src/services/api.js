@@ -67,6 +67,13 @@ export const userAPI = {
   changePassword: (data) => api.put('/users/change-password', data),
 };
 
+// ─── Upload API ────────────────────────────────────────────
+export const uploadAPI = {
+  uploadImage: (formData) => api.post('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+};
+
 // ─── Review API ────────────────────────────────────────────
 export const reviewAPI = {
   getRoomReviews: (roomId, params) => api.get(`/reviews/${roomId}`, { params }),

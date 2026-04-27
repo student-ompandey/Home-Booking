@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { roomAPI } from '../services/api';
-import { Plus, X, Upload } from 'lucide-react';
+import { roomAPI, uploadAPI } from '../services/api';
+import { Plus, X, Upload, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import LocationPicker from '../components/rooms/LocationPicker';
 
@@ -11,6 +11,7 @@ const AMENITY_OPTIONS = ['wifi', 'ac', 'kitchen', 'parking', 'tv', 'geyser', 'la
 export default function AddRoom() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [loadingImage, setLoadingImage] = useState(false);
   const [form, setForm] = useState({
     title: '', price: '', location: '', description: '', roomType: 'apartment', amenities: [], images: [],
     coordinates: { lat: 28.6139, lng: 77.2090 } // Default Delhi
@@ -36,9 +37,34 @@ export default function AddRoom() {
     }));
   };
 
-  const addImageUrl = () => {
-    const url = prompt('Enter image URL:');
-    if (url?.trim()) setForm((prev) => ({ ...prev, images: [...prev.images, url.trim()] }));
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    try {
+      setLoadingImage(true);
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await uploadAPI.uploadImage(formData);
+      setForm((prev) => ({ ...prev, images: [...prev.images, res.data.data.url] }));
+      toast.success('Image uploaded successfully');
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image. Please try again.');
+    } finally {
+      setLoadingImage(false);
+      e.target.value = ''; // Reset input
+    }
   };
 
   const removeImage = (idx) => {
@@ -138,17 +164,31 @@ export default function AddRoom() {
           <label className="block text-sm font-medium text-dark mb-2">Images</label>
           <div className="flex flex-wrap gap-3">
             {form.images.map((img, i) => (
-              <div key={i} className="relative w-24 h-20 rounded-lg overflow-hidden border border-gray-border group">
+              <div key={i} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
                 <img src={img} alt="" className="w-full h-full object-cover" />
-                <button type="button" onClick={() => removeImage(i)} className="absolute top-1 right-1 p-0.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                  <X className="w-3 h-3" />
+                <button type="button" onClick={() => removeImage(i)} className="absolute top-1.5 right-1.5 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm active:scale-95">
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
-            <button type="button" onClick={addImageUrl} className="w-24 h-20 border-2 border-dashed border-gray-border rounded-lg flex flex-col items-center justify-center text-gray-warm hover:border-primary hover:text-primary transition-colors">
-              <Upload className="w-5 h-5" />
-              <span className="text-[10px] mt-0.5">Add URL</span>
-            </button>
+            
+            {loadingImage ? (
+              <div className="w-24 h-24 border-2 border-gray-100 bg-gray-50 rounded-2xl flex flex-col items-center justify-center text-gray-400">
+                <Loader2 className="w-6 h-6 animate-spin mb-1 text-black" />
+                <span className="text-[10px] font-medium uppercase tracking-wider text-black">Uploading</span>
+              </div>
+            ) : (
+              <label className="w-24 h-24 border-2 border-dashed border-gray-200 hover:border-black hover:bg-gray-50 rounded-2xl flex flex-col items-center justify-center text-gray-400 hover:text-black transition-colors cursor-pointer active:scale-95">
+                <Upload className="w-5 h-5 mb-1" />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Upload</span>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleImageUpload} 
+                  className="hidden" 
+                />
+              </label>
+            )}
           </div>
         </div>
 

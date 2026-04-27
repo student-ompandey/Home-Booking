@@ -1,4 +1,4 @@
-import { Search, MapPin } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,28 +10,51 @@ export default function SearchBar({ className = '' }) {
     e.preventDefault();
     if (query.trim()) {
       navigate(`/rooms?search=${encodeURIComponent(query.trim())}`);
+    } else {
+      navigate('/rooms');
     }
   };
 
   return (
-    <form onSubmit={handleSearch} className={`relative ${className}`}>
-      <div className="flex items-center glass rounded-full border border-white/20 shadow-[0_0_30px_rgba(34,211,238,0.15)] hover:shadow-[0_0_30px_rgba(34,211,238,0.25)] transition-shadow overflow-hidden p-1">
-        <div className="flex items-center gap-3 pl-5 pr-2 py-3 flex-1">
-          <MapPin className="w-5 h-5 text-secondary shrink-0 animate-pulse-soft" />
+    <form onSubmit={handleSearch} className={`w-full ${className}`}>
+      <div className="flex items-center bg-canvas-white rounded-full border border-hairline-gray shadow-[0_2px_6px_rgba(0,0,0,0.04)] hover:shadow-elevation-1 transition-shadow pl-8 pr-2 py-2">
+        
+        {/* Segment 1: Where */}
+        <div className="flex-1 flex flex-col justify-center text-left">
+          <label className="text-[12px] font-bold text-ink-black tracking-wide">Where</label>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by city, area, or room name..."
-            className="w-full text-[15px] font-medium text-white placeholder:text-gray-400 outline-none bg-transparent"
+            placeholder="Search destinations"
+            className="w-full text-[14px] text-ink-black placeholder:text-ash-gray font-medium outline-none bg-transparent truncate"
           />
         </div>
+
+        {/* Divider */}
+        <div className="w-[1px] h-8 bg-hairline-gray mx-4 hidden sm:block"></div>
+
+        {/* Segment 2: When (Mock) */}
+        <div className="flex-1 flex-col justify-center text-left hidden sm:flex cursor-pointer hover:bg-soft-cloud rounded-full px-4 -ml-4 py-2 transition-colors">
+          <span className="text-[12px] font-bold text-ink-black tracking-wide">Check in</span>
+          <span className="text-[14px] text-ash-gray font-medium truncate">Add dates</span>
+        </div>
+
+        {/* Divider */}
+        <div className="w-[1px] h-8 bg-hairline-gray mx-4 hidden md:block"></div>
+
+        {/* Segment 3: Who (Mock) */}
+        <div className="flex-1 flex-col justify-center text-left hidden md:flex cursor-pointer hover:bg-soft-cloud rounded-full px-4 -ml-4 py-2 transition-colors">
+          <span className="text-[12px] font-bold text-ink-black tracking-wide">Who</span>
+          <span className="text-[14px] text-ash-gray font-medium truncate">Add guests</span>
+        </div>
+
+        {/* Submit Button */}
         <button
           type="submit"
-          className="m-1 px-6 py-3 btn-gradient flex items-center justify-center gap-2 group"
+          className="ml-2 w-12 h-12 bg-rausch rounded-full flex items-center justify-center shrink-0 hover:bg-deep-rausch transition-colors"
         >
-          <Search className="w-4.5 h-4.5 group-hover:scale-110 transition-transform" />
-          <span className="hidden sm:inline font-semibold">Search</span>
+          <Search className="w-5 h-5 text-white" strokeWidth={3} />
         </button>
       </div>
     </form>

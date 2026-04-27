@@ -117,6 +117,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/chats", chatRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/upload", require("./routes/uploadRoutes"));
 
 // ─── 404 Handler ──────────────────────────────────────────────
 app.use((req, res) => {

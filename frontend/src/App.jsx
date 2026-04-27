@@ -15,6 +15,8 @@ import Wishlist from './pages/Wishlist';
 import Profile from './pages/Profile';
 import MyListings from './pages/MyListings';
 import ChatPage from './pages/ChatPage';
+import About from './pages/About';
+import Services from './pages/Services';
 
 export default function App() {
   return (
@@ -23,13 +25,17 @@ export default function App() {
         <NotificationProvider>
           <WishlistProvider>
             <Routes>
+              {/* Standalone Auth Pages */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+
               {/* Public + User Layout */}
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
                 <Route path="/rooms" element={<Rooms />} />
                 <Route path="/rooms/:id" element={<RoomDetail />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/services" element={<Services />} />
                 <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/add-room" element={<ProtectedRoute ownerOnly><AddRoom /></ProtectedRoute>} />
                 <Route path="/my-listings" element={<ProtectedRoute ownerOnly><MyListings /></ProtectedRoute>} />

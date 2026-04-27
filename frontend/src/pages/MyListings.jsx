@@ -5,9 +5,9 @@ import { Clock, CheckCircle, XCircle, Plus, Home } from 'lucide-react';
 import Loader from '../components/ui/Loader';
 
 const STATUS_STYLE = {
-  pending: { icon: Clock, class: 'bg-amber-100 text-amber-700' },
-  approved: { icon: CheckCircle, class: 'bg-green-100 text-green-700' },
-  rejected: { icon: XCircle, class: 'bg-red-100 text-red-700' },
+  pending: { icon: Clock, class: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+  approved: { icon: CheckCircle, class: 'bg-green-100 text-green-800 border-green-200' },
+  rejected: { icon: XCircle, class: 'bg-red-100 text-red-800 border-red-200' },
 };
 
 export default function MyListings() {
@@ -31,50 +31,73 @@ export default function MyListings() {
   if (loading) return <Loader text="Loading your listings..." />;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-dark">My Listings</h1>
-          <p className="text-sm text-gray-warm mt-1">{rooms.length} room{rooms.length !== 1 ? 's' : ''} listed</p>
+    <div className="bg-[#f8f8f9] min-h-screen pb-24 pt-28 md:pt-32">
+      <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
+          <div>
+            <h1 className="text-[32px] md:text-[42px] font-bold tracking-tight text-black leading-none mb-1.5">My Listings</h1>
+            <p className="text-[15px] font-medium text-gray-500">{rooms.length} property{rooms.length !== 1 ? 's' : ''} listed</p>
+          </div>
+          <Link to="/add-room" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-[15px] font-bold text-white bg-[#1a1a1a] hover:bg-black rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.1)] transition-all whitespace-nowrap">
+            <Plus className="w-4 h-4" /> Add Property
+          </Link>
         </div>
-        <Link to="/add-room" className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors">
-          <Plus className="w-4 h-4" /> Add Room
-        </Link>
-      </div>
 
-      {rooms.length === 0 ? (
-        <div className="text-center py-20">
-          <Home className="w-12 h-12 text-gray-border mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-dark mb-1">No rooms listed yet</h3>
-          <p className="text-sm text-gray-warm mb-4">Start by listing your first room.</p>
-          <Link to="/add-room" className="text-sm text-primary font-medium hover:underline">Add a room →</Link>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {rooms.map((room) => {
-            const st = STATUS_STYLE[room.status] || STATUS_STYLE.pending;
-            const StIcon = st.icon;
-            return (
-              <div key={room._id} className="bg-white rounded-2xl border border-gray-border p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:shadow-sm transition-shadow">
-                <img src={room.images?.[0] || `https://placehold.co/80x60/F7F7F7/717171?text=${room.roomType}`}
-                  className="w-20 h-15 rounded-xl object-cover bg-gray-light shrink-0" alt="" />
-                <div className="flex-1 min-w-0">
-                  <Link to={`/rooms/${room._id}`} className="text-sm font-semibold text-dark hover:text-primary transition-colors line-clamp-1">{room.title}</Link>
-                  <p className="text-xs text-gray-warm mt-0.5">{room.location} · ₹{room.price?.toLocaleString('en-IN')}/mo</p>
+        {rooms.length === 0 ? (
+          <div className="bg-white rounded-[24px] border border-gray-200 p-12 text-center shadow-sm">
+            <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-5">
+              <Home className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-[24px] font-bold text-black mb-2">No properties listed yet</h3>
+            <p className="text-[15px] text-gray-500 font-medium mb-6">Start by listing your first property on SettelInn.</p>
+            <Link to="/add-room" className="inline-flex items-center gap-1.5 text-[15px] text-black font-bold border-b-2 border-black hover:text-gray-600 hover:border-gray-600 transition-colors pb-0.5">
+              List a property <Plus className="w-4 h-4" />
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-5">
+            {rooms.map((room) => {
+              const st = STATUS_STYLE[room.status] || STATUS_STYLE.pending;
+              const StIcon = st.icon;
+              return (
+                <div key={room._id} className="bg-white rounded-[24px] border border-gray-200 p-5 flex flex-col sm:flex-row items-start sm:items-stretch gap-5 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="w-full sm:w-[220px] shrink-0">
+                    <img 
+                      src={room.images?.[0] || `https://placehold.co/800x500/F7F7F7/717171?text=${room.roomType}`}
+                      className="w-full h-[180px] sm:h-[140px] rounded-[16px] object-cover bg-gray-50" 
+                      alt={room.title} 
+                    />
+                  </div>
+                  <div className="flex-1 flex flex-col min-w-0 w-full py-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-1">
+                      <Link to={`/rooms/${room._id}`} className="text-[20px] font-bold text-black hover:text-gray-600 transition-colors line-clamp-1 block">
+                        {room.title}
+                      </Link>
+                      <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold rounded-full border uppercase tracking-wider shrink-0 ${st.class}`}>
+                        <StIcon className="w-3.5 h-3.5" /> {room.status}
+                      </span>
+                    </div>
+                    
+                    <p className="text-[14px] font-medium text-gray-500 mb-3 line-clamp-1">{room.location}</p>
+                    
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-auto gap-3">
+                       <span className="text-[18px] font-bold text-black leading-none">
+                         ₹{room.price?.toLocaleString('en-IN')} <span className="text-gray-400 text-[14px] font-medium">/ month</span>
+                       </span>
+                       {room.adminNote && room.status === 'rejected' && (
+                         <span className="text-[12px] font-bold text-red-500 bg-red-50 border border-red-100 px-3 py-1.5 rounded-lg max-w-full sm:max-w-[60%] line-clamp-2">
+                           Note: {room.adminNote}
+                         </span>
+                       )}
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-full capitalize ${st.class}`}>
-                    <StIcon className="w-3 h-3" /> {room.status}
-                  </span>
-                </div>
-                {room.adminNote && room.status === 'rejected' && (
-                  <p className="text-xs text-red-500 sm:ml-2">Reason: {room.adminNote}</p>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

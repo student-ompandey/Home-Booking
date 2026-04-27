@@ -1,51 +1,49 @@
-import { Home } from 'lucide-react';
+import { Copyright } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-light border-t border-gray-border mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Brand */}
-          <div>
-            <Link to="/" className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-primary rounded-lg flex items-center justify-center">
-                <Home className="w-4 h-4 text-white" />
-              </div>
-              <span className="text-lg font-bold text-dark">
-                Settel<span className="text-primary">Inn</span>
-              </span>
-            </Link>
-            <p className="text-sm text-gray-warm leading-relaxed">
-              Find your perfect stay. Browse rooms, apartments, and PGs across India.
-            </p>
+    <footer className="bg-white border-t border-hairline-gray overflow-hidden pt-20">
+      <div className="max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 relative">
+        
+        {/* Top Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10 mb-20 gap-10">
+          
+          {/* Left: Subtle Links */}
+          <div className="flex flex-col gap-6 w-full md:w-1/3">
+            <div className="flex gap-8 text-[14px] font-semibold text-ink-black tracking-tight">
+              <Link to="/rooms" className="hover:opacity-60 transition-opacity">Explore</Link>
+              <Link to="/about" className="hover:opacity-60 transition-opacity">About</Link>
+              <Link to="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
+            </div>
+            <div className="flex gap-8 text-[14px] font-semibold text-ash-gray tracking-tight">
+              <a href="#" className="hover:text-ink-black transition-colors">Twitter</a>
+              <a href="#" className="hover:text-ink-black transition-colors">Instagram</a>
+              <a href="#" className="hover:text-ink-black transition-colors">LinkedIn</a>
+            </div>
           </div>
 
-          {/* Links */}
-          <div>
-            <h4 className="text-sm font-semibold text-dark mb-3">Explore</h4>
-            <ul className="space-y-2">
-              <li><Link to="/rooms" className="text-sm text-gray-warm hover:text-primary transition-colors">All Rooms</Link></li>
-              <li><Link to="/rooms?roomType=apartment" className="text-sm text-gray-warm hover:text-primary transition-colors">Apartments</Link></li>
-              <li><Link to="/rooms?roomType=pg" className="text-sm text-gray-warm hover:text-primary transition-colors">PG / Hostels</Link></li>
-            </ul>
+          {/* Center: Tagline */}
+          <div className="w-full md:w-1/3 flex justify-center text-center">
+            <h2 className="text-[28px] md:text-[32px] leading-[1.1] font-semibold text-ink-black tracking-tight max-w-[300px]">
+              The ultimate home booking experience.
+            </h2>
           </div>
 
-          {/* Support */}
-          <div>
-            <h4 className="text-sm font-semibold text-dark mb-3">Support</h4>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-sm text-gray-warm hover:text-primary transition-colors">Help Center</a></li>
-              <li><a href="#" className="text-sm text-gray-warm hover:text-primary transition-colors">Safety Info</a></li>
-              <li><a href="#" className="text-sm text-gray-warm hover:text-primary transition-colors">Terms of Service</a></li>
-            </ul>
+          {/* Right: Copyright Icon */}
+          <div className="w-full md:w-1/3 flex justify-start md:justify-end">
+            <Copyright className="w-12 h-12 md:w-16 md:h-16 text-ink-black stroke-[1.5]" />
           </div>
+          
         </div>
 
-        <div className="mt-8 pt-6 border-t border-gray-border flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-xs text-gray-warm">© 2026 SettelInn. All rights reserved.</p>
-          <p className="text-xs text-gray-warm">Made with ❤️ by Om Pandey</p>
+        {/* Bottom Section: MASSIVE Typography */}
+        <div className="w-full flex justify-center relative -mb-[4%] md:-mb-[6%] lg:-mb-[8%] pointer-events-none select-none">
+          <h1 className="text-[24vw] leading-[0.75] font-black text-ink-black tracking-tighter whitespace-nowrap">
+            SettelInn
+          </h1>
         </div>
+
       </div>
     </footer>
   );

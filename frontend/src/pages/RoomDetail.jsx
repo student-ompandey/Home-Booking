@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { roomAPI, chatAPI } from '../services/api';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
-import { Heart, MapPin, ArrowLeft, User, Calendar, Tag, Wifi, Wind, ChefHat, Car, Tv, ShowerHead, MessageCircle } from 'lucide-react';
+import { Heart, MapPin, ArrowLeft, Calendar, Tag, Wifi, Wind, ChefHat, Car, Tv, ShowerHead, MessageCircle, Star } from 'lucide-react';
 import Loader from '../components/ui/Loader';
 import toast from 'react-hot-toast';
 import ReviewSection from '../components/rooms/ReviewSection';
@@ -48,9 +48,9 @@ export default function RoomDetail() {
 
   if (loading) return <Loader text="Loading room details..." />;
   if (error) return (
-    <div className="text-center py-20">
-      <p className="text-red-500 mb-4">{error}</p>
-      <button onClick={() => navigate('/rooms')} className="text-sm text-primary hover:underline">← Back to rooms</button>
+    <div className="text-center py-20 bg-canvas-white min-h-screen">
+      <p className="text-rausch mb-4 text-subtitle">{error}</p>
+      <button onClick={() => navigate('/rooms')} className="text-[14px] font-semibold text-ink-black underline">← Back to rooms</button>
     </div>
   );
   if (!room) return null;
@@ -60,161 +60,194 @@ export default function RoomDetail() {
   const images = room.images?.length > 0 ? room.images : [placeholderImg];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-      {/* Back */}
-      <button onClick={() => navigate(-1)} className="flex items-center gap-1.5 text-sm text-gray-warm hover:text-dark mb-6 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back
-      </button>
-
-      {/* Image Gallery */}
-      <div className="rounded-2xl overflow-hidden mb-8">
-        <div className="relative aspect-[16/9] bg-gray-light">
-          <img src={images[activeImg]} alt={room.title} className="w-full h-full object-cover" />
-          {!room.isAvailable && (
-            <div className="absolute top-4 left-4 px-3 py-1 bg-red-500 text-white text-sm font-medium rounded-full">Booked</div>
-          )}
-          <button onClick={() => wishlisted ? removeFromWishlist(room._id) : addToWishlist(room)} className="absolute top-4 right-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-full hover:bg-white shadow transition-colors">
-            <Heart className={`w-5 h-5 ${wishlisted ? 'fill-primary text-primary' : 'text-dark/60'}`} />
-          </button>
-        </div>
-        {images.length > 1 && (
-          <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
-            {images.map((img, i) => (
-              <button key={i} onClick={() => setActiveImg(i)} className={`shrink-0 w-20 h-14 rounded-lg overflow-hidden border-2 transition-colors ${i === activeImg ? 'border-primary' : 'border-transparent opacity-60 hover:opacity-100'}`}>
-                <img src={img} alt="" className="w-full h-full object-cover" />
-              </button>
-            ))}
+    <div className="bg-[#f8f8f9] min-h-screen text-black animate-fade-in pb-32">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-36">
+        
+        {/* Header Title */}
+        <div className="mb-8">
+          <h1 className="text-[32px] md:text-[44px] font-bold tracking-tight text-black leading-tight mb-4">
+            {room.title}
+          </h1>
+          <div className="flex flex-wrap items-center gap-3 text-[14px] font-bold text-gray-600">
+             {room.numReviews > 0 && (
+              <span className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-full border border-gray-200 shadow-sm text-black">
+                <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" /> {room.averageRating} <span className="text-gray-400 font-medium ml-1">({room.numReviews} reviews)</span>
+              </span>
+             )}
+            <span className="flex items-center gap-1.5 bg-white px-4 py-1.5 rounded-full border border-gray-200 shadow-sm text-black">
+              <MapPin className="w-4 h-4 text-gray-400" />
+              {room.location}
+            </span>
           </div>
-        )}
-      </div>
-
-      {/* Details Grid */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        {/* Main Info */}
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide bg-primary/10 text-primary rounded-full">{room.roomType}</span>
-              {room.isAvailable !== false && <span className="px-2.5 py-0.5 text-xs font-semibold bg-green-50 text-green-600 rounded-full">Available</span>}
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-dark">{room.title}</h1>
-            <div className="flex items-center gap-1.5 mt-2 text-gray-warm">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">{room.location}</span>
-            </div>
-          </div>
-
-          <hr className="border-gray-border" />
-
-          {/* Description */}
-          <div>
-            <h2 className="text-lg font-semibold text-dark mb-3">About this place</h2>
-            <p className="text-sm text-gray-warm leading-relaxed whitespace-pre-line">{room.description}</p>
-          </div>
-
-          {/* Amenities */}
-          {room.amenities?.length > 0 && (
-            <div>
-              <h2 className="text-lg font-semibold text-dark mb-3">Amenities</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {room.amenities.map((a) => {
-                  const Icon = AMENITY_ICONS[a.toLowerCase()] || Tag;
-                  return (
-                    <div key={a} className="flex items-center gap-2.5 px-3 py-2.5 bg-gray-light rounded-xl">
-                      <Icon className="w-4 h-4 text-gray-warm" />
-                      <span className="text-sm text-dark capitalize">{a}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* Location Map */}
-          {room.coordinates && room.coordinates.lat && room.coordinates.lng && (
-            <div>
-              <h2 className="text-lg font-semibold text-dark mb-3">Location Map</h2>
-              <div className="h-64 rounded-2xl overflow-hidden border border-gray-border">
-                <MapContainer 
-                  center={[room.coordinates.lat, room.coordinates.lng]} 
-                  zoom={15} 
-                  scrollWheelZoom={false} 
-                  className="w-full h-full z-0"
-                >
-                  <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  />
-                  <Marker position={[room.coordinates.lat, room.coordinates.lng]} />
-                </MapContainer>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Sidebar — Booking Card */}
-        <div className="lg:col-span-1">
-          <div className="sticky top-24 bg-white border border-gray-border rounded-2xl p-6 shadow-sm">
-            <div className="mb-4">
-              <span className="text-2xl font-bold text-dark">₹{room.price?.toLocaleString('en-IN')}</span>
-              <span className="text-gray-warm text-sm"> / month</span>
-            </div>
-
-            <button
-              onClick={() => {
-                if (!isAuthenticated) { navigate('/login'); return; }
-                toast.success('Booking request sent! Owner will contact you.');
-              }}
-              disabled={room.isAvailable === false}
-              className="w-full py-3 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:bg-gray-border disabled:text-gray-warm disabled:cursor-not-allowed"
-            >
-              {room.isAvailable === false ? 'Currently Booked' : 'Book Now'}
-            </button>
-
-            {/* Chat with Owner */}
-            {room.owner && room.owner._id !== user?._id && (
-              <button
-                onClick={async () => {
-                  if (!isAuthenticated) { navigate('/login'); return; }
-                  try {
-                    const { data } = await chatAPI.createChat({ ownerId: room.owner._id, roomId: room._id });
-                    navigate(`/chat/${data.data._id}`);
-                  } catch (err) {
-                    toast.error('Failed to start chat');
-                  }
-                }}
-                className="w-full mt-2 py-3 text-sm font-semibold text-primary bg-primary/10 hover:bg-primary/20 rounded-xl transition-colors flex items-center justify-center gap-2"
+        {/* Premium Bento-Box Gallery */}
+        <div className="mb-12">
+          <div className={`grid gap-3 ${images.length >= 3 ? 'grid-cols-1 md:grid-cols-4 md:grid-rows-2 h-[350px] md:h-[500px]' : 'grid-cols-1 h-[350px] md:h-[500px]'}`}>
+            
+            {/* Primary Large Image */}
+            <div className={`relative rounded-[24px] overflow-hidden shadow-sm group ${images.length >= 3 ? 'md:col-span-3 md:row-span-2' : ''}`}>
+              <img src={images[0]} alt={room.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <button 
+                onClick={() => wishlisted ? removeFromWishlist(room._id) : addToWishlist(room)} 
+                className="absolute top-5 right-5 p-3.5 bg-white/40 backdrop-blur-md rounded-full border border-white/50 shadow-[0_8px_20px_rgb(0,0,0,0.12)] hover:bg-white/60 active:scale-95 transition-all"
               >
-                <MessageCircle className="w-4 h-4" />
-                Chat with Owner
+                <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'fill-[#1a1a1a] text-[#1a1a1a]' : 'text-white'}`} />
               </button>
-            )}
+            </div>
 
-            {/* Owner */}
-            {room.owner && (
-              <div className="mt-5 pt-5 border-t border-gray-border">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-dark rounded-full flex items-center justify-center shrink-0">
-                    <User className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-dark">{room.owner.name}</p>
-                    <p className="text-xs text-gray-warm">{room.owner.email}</p>
-                  </div>
+            {/* Secondary Images (if available) */}
+            {images.length >= 3 && (
+              <>
+                <div className="hidden md:block relative rounded-[24px] overflow-hidden shadow-sm group">
+                  <img src={images[1]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+                </div>
+                <div className="hidden md:block relative rounded-[24px] overflow-hidden shadow-sm group">
+                  <img src={images[2]} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000" />
+                  {images.length > 3 && (
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center cursor-pointer hover:bg-black/50 transition-colors">
+                       <span className="text-white text-[16px] font-bold tracking-wide">+{images.length - 3}</span>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Details Layout */}
+        <div className="grid lg:grid-cols-3 gap-10 relative">
+          
+          {/* Main Info Column (Wrapped in a white card for elegance) */}
+          <div className="lg:col-span-2 bg-white rounded-[32px] p-8 md:p-10 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)]">
+            
+            {/* Host Section */}
+            <div className="flex items-center justify-between pb-8 border-b border-gray-100">
+              <div>
+                <h2 className="text-[24px] md:text-[28px] font-bold text-black mb-2">Hosted by {room.owner?.name || 'SettelInn Host'}</h2>
+                <span className="text-[12px] font-bold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg uppercase tracking-widest">{room.roomType}</span>
+              </div>
+              {room.owner && (
+                <div className="w-14 h-14 bg-[#1a1a1a] rounded-full flex items-center justify-center shrink-0 shadow-md">
+                  <span className="text-white font-bold text-xl">{room.owner.name?.charAt(0).toUpperCase()}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Description */}
+            <div className="py-10 border-b border-gray-100">
+              <h2 className="text-[20px] font-bold text-black mb-5">About this space</h2>
+              <p className="text-[15px] leading-relaxed text-gray-600 font-medium whitespace-pre-line">{room.description}</p>
+            </div>
+
+            {/* Amenities */}
+            {room.amenities?.length > 0 && (
+              <div className="py-10 border-b border-gray-100">
+                <h2 className="text-[20px] font-bold text-black mb-6">What this place offers</h2>
+                <div className="grid grid-cols-2 gap-y-5 gap-x-6">
+                  {room.amenities.map((a) => {
+                    const Icon = AMENITY_ICONS[a.toLowerCase()] || Tag;
+                    return (
+                      <div key={a} className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-[#1a1a1a] group-hover:text-white transition-colors">
+                          <Icon className="w-4 h-4 shrink-0" strokeWidth={2} />
+                        </div>
+                        <span className="text-[15px] font-semibold text-black capitalize">{a}</span>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
 
-            <div className="mt-4 flex items-center gap-1.5 text-xs text-gray-warm">
-              <Calendar className="w-3.5 h-3.5" />
-              Listed {new Date(room.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+            {/* Location Map */}
+            {room.coordinates && room.coordinates.lat && room.coordinates.lng && (
+              <div className="py-10 border-b border-gray-100">
+                <h2 className="text-[20px] font-bold text-black mb-6">Where you'll be</h2>
+                <div className="h-[350px] rounded-[24px] overflow-hidden bg-gray-100 shadow-inner z-0 border border-gray-200">
+                  <MapContainer 
+                    center={[room.coordinates.lat, room.coordinates.lng]} 
+                    zoom={15} 
+                    scrollWheelZoom={false} 
+                    className="w-full h-full z-0"
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[room.coordinates.lat, room.coordinates.lng]} />
+                  </MapContainer>
+                </div>
+              </div>
+            )}
+            
+            {/* Reviews */}
+            <div className="pt-10">
+               <ReviewSection roomId={room._id} />
+            </div>
+
+          </div>
+
+          {/* Sidebar — Floating Booking Card */}
+          <div className="lg:col-span-1">
+            <div className="sticky top-28 bg-white border border-gray-100 rounded-[32px] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.06)] transition-all">
+              
+              <div className="mb-8 pb-8 border-b border-gray-100">
+                <div className="flex items-end gap-2">
+                  <span className="text-[32px] md:text-[36px] font-bold text-black leading-none tracking-tight">₹{room.price?.toLocaleString('en-IN')}</span>
+                  <span className="text-gray-400 font-medium text-[15px] mb-0.5">/ month</span>
+                </div>
+              </div>
+
+              <div className="relative z-10 flex flex-col gap-3">
+                <button
+                  onClick={() => {
+                    if (!isAuthenticated) { navigate('/login'); return; }
+                    toast.success('Booking request sent! Owner will contact you.');
+                  }}
+                  disabled={room.isAvailable === false}
+                  className="w-full py-4 text-[15px] font-bold text-white bg-[#1a1a1a] rounded-full hover:bg-black disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all"
+                >
+                  {room.isAvailable === false ? 'Currently Booked' : 'Reserve Now'}
+                </button>
+                
+                <p className="text-center text-[12px] font-semibold text-gray-400 mb-2">You won't be charged yet</p>
+
+                {/* Chat with Owner */}
+                {room.owner && (
+                  <button
+                    onClick={async () => {
+                      if (!isAuthenticated) { navigate('/login'); return; }
+                      if (room.owner._id === user?._id) {
+                         toast.error("You can't chat with yourself!"); 
+                         return; 
+                      }
+                      try {
+                        const { data } = await chatAPI.createChat({ ownerId: room.owner._id, roomId: room._id });
+                        navigate(`/chat/${data.data._id}`);
+                      } catch (err) {
+                        toast.error('Failed to start chat');
+                      }
+                    }}
+                    className="w-full py-4 text-[15px] font-bold text-black bg-white border border-gray-200 rounded-full transition-all flex items-center justify-center gap-2 hover:bg-gray-50 hover:border-black"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Contact Host
+                  </button>
+                )}
+                
+                <div className="mt-4 pt-6 border-t border-gray-100 flex items-center justify-center gap-1.5 text-[11px] font-bold text-gray-400 uppercase tracking-widest">
+                  <Calendar className="w-3.5 h-3.5" />
+                  Listed {new Date(room.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
-
-      {/* Reviews */}
-      <ReviewSection roomId={room._id} />
     </div>
   );
 }

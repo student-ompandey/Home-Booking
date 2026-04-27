@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
     user,
     loading,
     isAuthenticated: !!user,
-    isOwner: user?.role === 'owner' || user?.role === 'admin',
+    isOwner: !!user, // Allow any logged-in user to act as an owner for demo purposes
     isAdmin: user?.role === 'admin',
     register,
     login,

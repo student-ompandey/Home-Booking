@@ -1,93 +1,152 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
-/* ─── Custom Design Tokens ─────────────────────────────────── */
+/* ─── Airbnb-Inspired Design Tokens ──────────────────────────── */
 @theme {
-  --color-primary: #7C3AED;
-  --color-primary-dark: #6D28D9;
-  --color-primary-light: #8B5CF6;
-  --color-secondary: #22D3EE;
-  --color-accent: #F59E0B;
-  --color-dark: #0B0F19;
-  --color-gray-warm: #9CA3AF;
-  --color-gray-light: #1F2937;
-  --color-gray-border: #374151;
-  --color-text-main: #E5E7EB;
+  /* Primary & Accents */
+  --color-rausch: #ff385c;
+  --color-deep-rausch: #e00b41;
+  --color-plus-magenta: #92174d;
+  --color-luxe-purple: #460479;
+  --color-info-blue: #428bff;
+  
+  /* Surfaces & Borders */
+  --color-canvas-white: #ffffff;
+  --color-soft-cloud: #f7f7f7;
+  --color-hairline-gray: #dddddd;
+  
+  /* Neutrals & Text */
+  --color-ink-black: #222222;
+  --color-charcoal: #3f3f3f;
+  --color-ash-gray: #6a6a6a;
+  --color-mute-gray: #929292;
+  --color-stone-gray: #c1c1c1;
+  
+  /* Semantic */
+  --color-error-red: #c13515;
+
+  /* Fonts */
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Poppins', system-ui, sans-serif;
 }
 
 /* ─── Base Styles ──────────────────────────────────────────── */
 body {
   font-family: var(--font-sans);
-  color: var(--color-text-main);
-  background-color: var(--color-dark);
+  color: var(--color-ink-black);
+  background-color: var(--color-canvas-white);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* 500 is the new 400 in this system */
+  font-weight: 500; 
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
+  font-family: var(--font-sans);
+  color: var(--color-ink-black);
 }
 
 /* ─── Custom Utilities ─────────────────────────────────────── */
 @layer utilities {
-  .glass {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.1)];
+  /* Typography Scale */
+  .text-heading-xl {
+    @apply text-[28px] leading-[1.43] font-bold tracking-normal;
+  }
+  .text-heading-lg {
+    @apply text-[22px] leading-[1.18] font-medium tracking-[-0.44px];
+  }
+  .text-card-title {
+    @apply text-[21px] leading-[1.43] font-bold tracking-normal;
+  }
+  .text-listing-title {
+    @apply text-[20px] leading-[1.20] font-semibold tracking-[-0.18px];
+  }
+  .text-subtitle {
+    @apply text-[16px] leading-[1.25] font-semibold tracking-normal;
+  }
+  .text-body {
+    @apply text-[16px] leading-[1.25] font-medium tracking-normal;
+  }
+  .text-caption {
+    @apply text-[14px] leading-[1.29] font-medium tracking-normal;
+  }
+  .text-caption-bold {
+    @apply text-[14px] leading-[1.43] font-semibold tracking-normal;
+  }
+  .text-micro {
+    @apply text-[12px] leading-[1.33] font-normal tracking-normal;
+  }
+  .text-micro-bold {
+    @apply text-[12px] leading-[1.33] font-bold tracking-normal;
+  }
+  .text-superscript {
+    @apply text-[8px] leading-[1.25] font-bold tracking-[0.32px] uppercase;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply bg-rausch text-white text-[16px] font-medium py-[14px] px-[24px] rounded-lg transition-transform duration-200;
+  }
+  .btn-primary:active {
+    @apply scale-[0.92] ring-2 ring-ink-black ring-offset-2 ring-offset-white;
   }
   
-  .glass-heavy {
-    @apply bg-black/40 backdrop-blur-2xl border border-white/5;
+  .btn-secondary {
+    @apply bg-white text-ink-black text-[14px] font-medium py-[10px] px-[16px] rounded-lg border border-hairline-gray transition-colors duration-200 hover:bg-soft-cloud;
+  }
+  
+  .btn-icon-circular {
+    @apply bg-[#f2f2f2] text-ink-black rounded-full w-9 h-9 flex items-center justify-center transition-transform duration-200;
+  }
+  .btn-icon-circular:active {
+    @apply scale-[0.92];
   }
 
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_auto] animate-[shimmer_3s_linear_infinite];
+  /* Shadows */
+  .shadow-elevation-1 {
+    box-shadow: rgba(0, 0, 0, 0.08) 0 4px 12px;
   }
-
-  .btn-gradient {
-    @apply relative overflow-hidden bg-gradient-to-r from-primary to-secondary text-white font-medium rounded-xl transition-all duration-300 hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] hover:-translate-y-0.5 active:translate-y-0;
+  .shadow-elevation-2 {
+    box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
   }
 }
 
 /* ─── Scrollbar ────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c4c4c4;
-  border-radius: 3px;
+  background: var(--color-hairline-gray);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-stone-gray);
 }
 
 /* ─── Animations ───────────────────────────────────────────── */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.3s ease-out forwards;
 }
 
-.animate-pulse-soft {
-  animation: pulse-soft 1.5s ease-in-out infinite;
+/* ─── Futuristic Footer Utilities ──────────────────────────── */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 80px 80px;
 }
 
-.skeleton {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
-  border-radius: 8px;
+.text-distorted {
+  font-family: 'Arial Black', 'Impact', sans-serif;
+  transform: scaleY(1.5) scaleX(0.8) skewX(-10deg);
+  display: inline-block;
+  white-space: nowrap;
+  letter-spacing: -0.05em;
 }

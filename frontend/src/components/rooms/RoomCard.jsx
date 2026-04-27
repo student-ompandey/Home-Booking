@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, MapPin, Star } from 'lucide-react';
+import { Heart, Star } from 'lucide-react';
 import { useWishlist } from '../../context/WishlistContext';
 
 export default function RoomCard({ room }) {
@@ -12,69 +12,68 @@ export default function RoomCard({ room }) {
     wishlisted ? removeFromWishlist(room._id) : addToWishlist(room);
   };
 
-  const placeholderImg = `https://placehold.co/400x300/1F2937/9CA3AF?text=${encodeURIComponent(room.roomType || 'Room')}`;
+  const placeholderImg = `https://placehold.co/400x300/F7F7F7/6A6A6A?text=${encodeURIComponent(room.roomType || 'Room')}`;
 
   return (
     <Link
       to={`/rooms/${room._id}`}
-      className="group block rounded-2xl overflow-hidden glass hover:shadow-[0_0_25px_rgba(124,58,237,0.3)] transition-all duration-500 hover:-translate-y-2 animate-fade-in"
+      className="group block animate-fade-in bg-white p-3 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)] hover:-translate-y-1.5 hover:border-gray-200 transition-all duration-300"
     >
-      {/* Image */}
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#1F2937]">
+      {/* Image Container */}
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[16px] mb-3 bg-gray-50">
         <img
           src={room.images?.[0] || placeholderImg}
           alt={room.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0F19] via-transparent to-transparent opacity-80"></div>
+        
+        {/* Wishlist Heart */}
         <button
           onClick={toggleWishlist}
-          className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 hover:bg-black/60 transition-colors shadow-lg"
+          className="absolute top-3 right-3 p-2 rounded-full bg-white/20 backdrop-blur-md border border-white/30 transition-transform active:scale-[0.92] hover:bg-white/40"
         >
           <Heart
-            className={`w-4.5 h-4.5 transition-colors ${
-              wishlisted ? 'fill-primary text-primary drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]' : 'text-gray-300 hover:text-primary'
+            className={`w-4 h-4 transition-colors ${
+              wishlisted ? 'fill-[#1a1a1a] text-[#1a1a1a]' : 'fill-transparent text-white'
             }`}
           />
         </button>
-        <span className="absolute top-3 left-3 px-3 py-1 text-[11px] font-bold uppercase tracking-widest bg-primary/80 backdrop-blur-md text-white rounded-full border border-white/20 shadow-lg">
+
+        {/* Room Type Badge */}
+        <span className="absolute top-3 left-3 px-2.5 py-1 text-[11px] font-bold text-black bg-white/90 backdrop-blur-md rounded-[6px] shadow-sm uppercase tracking-wider">
           {room.roomType}
         </span>
       </div>
 
       {/* Info */}
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-[16px] font-semibold text-white leading-snug line-clamp-1 group-hover:text-secondary transition-colors">
-            {room.title}
+      <div className="flex flex-col gap-0.5 px-1.5 pb-1">
+        <div className="flex items-start justify-between mb-0.5">
+          <h3 className="text-[16px] font-bold text-black line-clamp-1 pr-2">
+            {room.location}
           </h3>
           {room.numReviews > 0 && (
-            <div className="flex items-center gap-1 shrink-0 bg-white/5 px-2 py-1 rounded-md border border-white/5">
-              <Star className="w-3.5 h-3.5 fill-accent text-accent" />
-              <span className="text-xs font-semibold text-white">{room.averageRating}</span>
-              <span className="text-[10px] text-gray-400">({room.numReviews})</span>
+            <div className="flex items-center gap-1 shrink-0 bg-gray-50 px-1.5 py-0.5 rounded-[6px]">
+              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+              <span className="text-[12px] font-bold text-black">{room.averageRating}</span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 mt-2.5">
-          <MapPin className="w-4 h-4 text-secondary" />
-          <span className="text-sm text-gray-300 line-clamp-1">{room.location}</span>
-        </div>
+        <p className="text-[13px] font-medium text-gray-500 line-clamp-1">{room.title}</p>
+        
+        <p className="text-[13px] font-medium text-gray-400">
+           {room.isAvailable === false ? 'Currently Booked' : 'Available now'}
+        </p>
 
-        <p className="text-sm text-gray-400 mt-2 line-clamp-1">{room.description}</p>
-
-        <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between">
-          <p className="text-[16px]">
-            <span className="font-bold text-gradient text-lg">₹{room.price?.toLocaleString('en-IN')}</span>
-            <span className="text-gray-400 text-xs ml-1">/ month</span>
+        <div className="mt-2.5 pt-2.5 border-t border-gray-100 flex justify-between items-center">
+          <p className="text-[15px] text-black">
+            <span className="font-bold">₹{room.price?.toLocaleString('en-IN')}</span>
+            <span className="text-[12px] font-medium text-gray-500 ml-1">/ month</span>
           </p>
-          {room.isAvailable === false && (
-            <span className="text-xs font-semibold text-red-400 bg-red-500/10 px-2.5 py-1 rounded-full border border-red-500/20">
-              Booked
-            </span>
-          )}
+          <div className="w-7 h-7 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#1a1a1a] group-hover:text-white text-black transition-colors">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+          </div>
         </div>
       </div>
     </Link>

@@ -42,7 +42,6 @@ router.get("/:id", getRoomById);
 router.post(
   "/",
   protect,
-  authorize("owner", "admin"),
   uploadLimiter,
   uploadRoomImages,
   validate(createRoomSchema),
@@ -52,12 +51,11 @@ router.post(
 router.put(
   "/:id",
   protect,
-  authorize("owner", "admin"),
   uploadRoomImages,
   validate(updateRoomSchema),
   updateRoom
 );
 
-router.delete("/:id", protect, authorize("owner", "admin"), deleteRoom);
+router.delete("/:id", protect, deleteRoom);
 
 module.exports = router;
