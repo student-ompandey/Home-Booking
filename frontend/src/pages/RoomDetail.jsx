@@ -92,9 +92,9 @@ export default function RoomDetail() {
               
               <button 
                 onClick={() => wishlisted ? removeFromWishlist(room._id) : addToWishlist(room)} 
-                className="absolute top-5 right-5 p-3.5 bg-white/40 backdrop-blur-md rounded-full border border-white/50 shadow-[0_8px_20px_rgb(0,0,0,0.12)] hover:bg-white/60 active:scale-95 transition-all"
+                className="absolute top-5 right-5 p-3.5 bg-white/40 backdrop-blur-md rounded-full border border-white/50 shadow-sm hover:bg-white/60 transition-all"
               >
-                <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'fill-[#1a1a1a] text-[#1a1a1a]' : 'text-white'}`} />
+                <Heart className={`w-5 h-5 transition-colors ${wishlisted ? 'fill-rose-500 text-rose-500' : 'text-white'}`} />
               </button>
             </div>
 
@@ -130,8 +130,8 @@ export default function RoomDetail() {
                 <span className="text-[12px] font-bold text-gray-500 bg-gray-100 px-3 py-1.5 rounded-lg uppercase tracking-widest">{room.roomType}</span>
               </div>
               {room.owner && (
-                <div className="w-14 h-14 bg-[#1a1a1a] rounded-full flex items-center justify-center shrink-0 shadow-md">
-                  <span className="text-white font-bold text-xl">{room.owner.name?.charAt(0).toUpperCase()}</span>
+                <div className="w-14 h-14 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center shrink-0 shadow-sm">
+                  <span className="font-bold text-xl">{room.owner.name?.charAt(0).toUpperCase()}</span>
                 </div>
               )}
             </div>
@@ -208,9 +208,9 @@ export default function RoomDetail() {
                     toast.success('Booking request sent! Owner will contact you.');
                   }}
                   disabled={room.isAvailable === false}
-                  className="w-full py-4 text-[15px] font-bold text-white bg-[#1a1a1a] rounded-full hover:bg-black disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed shadow-[0_8px_20px_rgba(0,0,0,0.1)] transition-all"
+                  className="w-full py-4 text-[15px] font-bold text-white bg-rose-500 rounded-xl hover:bg-rose-600 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed shadow-sm transition-colors"
                 >
-                  {room.isAvailable === false ? 'Currently Booked' : 'Reserve Now'}
+                  {room.isAvailable === false ? 'Currently Booked' : 'Reserve'}
                 </button>
                 
                 <p className="text-center text-[12px] font-semibold text-gray-400 mb-2">You won't be charged yet</p>
@@ -231,7 +231,7 @@ export default function RoomDetail() {
                         toast.error('Failed to start chat');
                       }
                     }}
-                    className="w-full py-4 text-[15px] font-bold text-black bg-white border border-gray-200 rounded-full transition-all flex items-center justify-center gap-2 hover:bg-gray-50 hover:border-black"
+                    className="w-full py-4 text-[15px] font-bold text-gray-700 bg-white border border-gray-300 rounded-xl transition-colors flex items-center justify-center gap-2 hover:bg-gray-50"
                   >
                     <MessageCircle className="w-4 h-4" />
                     Contact Host

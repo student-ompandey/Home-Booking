@@ -90,30 +90,30 @@ export default function AddRoom() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
-      <h1 className="text-2xl font-bold text-dark mb-2">List a New Room</h1>
-      <p className="text-sm text-gray-warm mb-8">Fill in the details to publish your room on SettelInn.</p>
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">List a New Room</h1>
+      <p className="text-gray-500 mb-8">Fill in the details to publish your property on SettelInn.</p>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-1.5">Room Title</label>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">Room Title</label>
           <input type="text" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="e.g., Cozy Studio near Metro" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.title ? 'border-red-400' : 'border-gray-border'}`} />
+            placeholder="e.g., Cozy Studio near Metro" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 ${errors.title ? 'border-red-400' : 'border-gray-300'}`} />
           {errors.title && <p className="mt-1 text-xs text-red-500">{errors.title}</p>}
         </div>
 
         {/* Price + Type */}
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-dark mb-1.5">Price (₹/month)</label>
+            <label className="block text-sm font-medium text-gray-900 mb-1.5">Price (₹/month)</label>
             <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })}
-              placeholder="8500" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.price ? 'border-red-400' : 'border-gray-border'}`} />
+              placeholder="8500" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 ${errors.price ? 'border-red-400' : 'border-gray-300'}`} />
             {errors.price && <p className="mt-1 text-xs text-red-500">{errors.price}</p>}
           </div>
           <div>
-            <label className="block text-sm font-medium text-dark mb-1.5">Room Type</label>
+            <label className="block text-sm font-medium text-gray-900 mb-1.5">Room Type</label>
             <select value={form.roomType} onChange={(e) => setForm({ ...form, roomType: e.target.value })}
-              className="w-full px-4 py-2.5 text-sm border border-gray-border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary bg-white">
+              className="w-full px-4 py-2.5 text-sm border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 bg-white">
               {ROOM_TYPES.map((t) => <option key={t} value={t} className="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>)}
             </select>
           </div>
@@ -121,16 +121,16 @@ export default function AddRoom() {
 
         {/* Location */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-1.5">Location Name</label>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">Location Name</label>
           <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
-            placeholder="e.g., Andheri West, Mumbai" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary ${errors.location ? 'border-red-400' : 'border-gray-border'}`} />
+            placeholder="e.g., Andheri West, Mumbai" className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 ${errors.location ? 'border-red-400' : 'border-gray-300'}`} />
           {errors.location && <p className="mt-1 text-xs text-red-500">{errors.location}</p>}
         </div>
 
         {/* Map Coordinates */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-1.5">Pin Exact Location</label>
-          <p className="text-xs text-gray-warm mb-3">Click on the map to set the exact location of your room.</p>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">Pin Exact Location</label>
+          <p className="text-xs text-gray-500 mb-3">Click on the map to set the exact location of your room.</p>
           <LocationPicker 
             position={form.coordinates} 
             onChange={(coords) => setForm({ ...form, coordinates: coords })} 
@@ -139,20 +139,20 @@ export default function AddRoom() {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-1.5">Description</label>
+          <label className="block text-sm font-medium text-gray-900 mb-1.5">Description</label>
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
             rows={4} placeholder="Describe the room, nearby landmarks, rules, etc."
-            className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none ${errors.description ? 'border-red-400' : 'border-gray-border'}`} />
+            className={`w-full px-4 py-2.5 text-sm border rounded-xl outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 resize-none ${errors.description ? 'border-red-400' : 'border-gray-300'}`} />
           {errors.description && <p className="mt-1 text-xs text-red-500">{errors.description}</p>}
         </div>
 
         {/* Amenities */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">Amenities</label>
+          <label className="block text-sm font-medium text-gray-900 mb-2">Amenities</label>
           <div className="flex flex-wrap gap-2">
             {AMENITY_OPTIONS.map((a) => (
               <button key={a} type="button" onClick={() => toggleAmenity(a)}
-                className={`px-3 py-1.5 text-sm rounded-full border transition-colors capitalize ${form.amenities.includes(a) ? 'bg-primary/10 border-primary text-primary' : 'border-gray-border text-gray-warm hover:border-gray-warm'}`}>
+                className={`px-3 py-1.5 text-sm rounded-full border transition-colors capitalize ${form.amenities.includes(a) ? 'bg-primary/10 border-primary text-primary' : 'border-gray-300 text-gray-warm hover:border-gray-warm'}`}>
                 {a}
               </button>
             ))}
@@ -161,7 +161,7 @@ export default function AddRoom() {
 
         {/* Images */}
         <div>
-          <label className="block text-sm font-medium text-dark mb-2">Images</label>
+          <label className="block text-sm font-medium text-gray-900 mb-2">Images</label>
           <div className="flex flex-wrap gap-3">
             {form.images.map((img, i) => (
               <div key={i} className="relative w-24 h-24 rounded-2xl overflow-hidden border border-gray-100 shadow-sm group">
@@ -193,7 +193,7 @@ export default function AddRoom() {
         </div>
 
         <button type="submit" disabled={loading}
-          className="w-full py-3 text-sm font-semibold text-white bg-primary hover:bg-primary-dark rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          className="w-full py-4 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm">
           {loading ? 'Publishing...' : <><Plus className="w-4 h-4" /> Publish Room</>}
         </button>
       </form>

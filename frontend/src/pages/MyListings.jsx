@@ -36,22 +36,22 @@ export default function MyListings() {
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-10">
           <div>
-            <h1 className="text-[32px] md:text-[42px] font-bold tracking-tight text-black leading-none mb-1.5">My Listings</h1>
-            <p className="text-[15px] font-medium text-gray-500">{rooms.length} property{rooms.length !== 1 ? 's' : ''} listed</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-1">My Listings</h1>
+            <p className="text-gray-500 font-medium">{rooms.length} property{rooms.length !== 1 ? 's' : ''} listed</p>
           </div>
-          <Link to="/add-room" className="inline-flex items-center justify-center gap-2 px-6 py-3.5 text-[15px] font-bold text-white bg-[#1a1a1a] hover:bg-black rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.1)] transition-all whitespace-nowrap">
+          <Link to="/add-room" className="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-bold text-white bg-rose-500 hover:bg-rose-600 rounded-xl shadow-sm transition-colors whitespace-nowrap">
             <Plus className="w-4 h-4" /> Add Property
           </Link>
         </div>
 
         {rooms.length === 0 ? (
-          <div className="bg-white rounded-[24px] border border-gray-200 p-12 text-center shadow-sm">
+          <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center shadow-sm">
             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-5">
               <Home className="w-8 h-8 text-gray-400" />
             </div>
-            <h3 className="text-[24px] font-bold text-black mb-2">No properties listed yet</h3>
-            <p className="text-[15px] text-gray-500 font-medium mb-6">Start by listing your first property on SettelInn.</p>
-            <Link to="/add-room" className="inline-flex items-center gap-1.5 text-[15px] text-black font-bold border-b-2 border-black hover:text-gray-600 hover:border-gray-600 transition-colors pb-0.5">
+            <h3 className="text-2xl font-bold text-gray-900 mb-2">No properties listed yet</h3>
+            <p className="text-gray-500 font-medium mb-6">Start by listing your first property on SettelInn.</p>
+            <Link to="/add-room" className="inline-flex items-center gap-1.5 text-rose-500 font-bold hover:text-rose-600 hover:underline transition-colors pb-0.5">
               List a property <Plus className="w-4 h-4" />
             </Link>
           </div>
@@ -71,7 +71,7 @@ export default function MyListings() {
                   </div>
                   <div className="flex-1 flex flex-col min-w-0 w-full py-1">
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-1">
-                      <Link to={`/rooms/${room._id}`} className="text-[20px] font-bold text-black hover:text-gray-600 transition-colors line-clamp-1 block">
+                      <Link to={`/rooms/${room._id}`} className="text-xl font-bold text-gray-900 hover:text-rose-500 transition-colors line-clamp-1 block">
                         {room.title}
                       </Link>
                       <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[12px] font-bold rounded-full border uppercase tracking-wider shrink-0 ${st.class}`}>
@@ -82,8 +82,8 @@ export default function MyListings() {
                     <p className="text-[14px] font-medium text-gray-500 mb-3 line-clamp-1">{room.location}</p>
                     
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-auto gap-3">
-                       <span className="text-[18px] font-bold text-black leading-none">
-                         ₹{room.price?.toLocaleString('en-IN')} <span className="text-gray-400 text-[14px] font-medium">/ month</span>
+                       <span className="text-lg font-bold text-gray-900 leading-none">
+                         ₹{room.price?.toLocaleString('en-IN')} <span className="text-gray-400 text-sm font-medium">/ month</span>
                        </span>
                        {room.adminNote && room.status === 'rejected' && (
                          <span className="text-[12px] font-bold text-red-500 bg-red-50 border border-red-100 px-3 py-1.5 rounded-lg max-w-full sm:max-w-[60%] line-clamp-2">

@@ -50,19 +50,19 @@ export default function Profile() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 animate-fade-in">
-      <h1 className="text-2xl font-bold text-dark mb-8">Your Profile</h1>
-      <div className="bg-white border border-gray-border rounded-2xl p-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">Your Profile</h1>
+      <div className="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
         <div className="flex items-center gap-6 mb-8">
           
           {/* Clickable Avatar */}
           <div className="relative group cursor-pointer" onClick={() => !uploading && fileInputRef.current?.click()}>
-            <div className="w-20 h-20 bg-[#1a1a1a] rounded-full flex items-center justify-center overflow-hidden border-2 border-gray-100 shadow-sm relative">
+            <div className="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center overflow-hidden border-2 border-white shadow-sm relative text-rose-500">
               {uploading ? (
                 <Loader2 className="w-6 h-6 text-white animate-spin" />
               ) : user?.avatar ? (
                 <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover" />
               ) : (
-                <span className="text-white text-3xl font-bold">{user?.name?.charAt(0).toUpperCase()}</span>
+                <span className="text-3xl font-bold">{user?.name?.charAt(0).toUpperCase()}</span>
               )}
               
               {/* Hover Overlay */}
@@ -84,8 +84,8 @@ export default function Profile() {
           </div>
 
           <div>
-            <h2 className="text-xl font-bold text-dark">{user?.name}</h2>
-            <span className="text-[12px] font-bold uppercase tracking-widest text-primary bg-primary/10 px-3 py-1 rounded-full mt-1 inline-block">{user?.role}</span>
+            <h2 className="text-xl font-bold text-gray-900">{user?.name}</h2>
+            <span className="text-[12px] font-bold uppercase tracking-widest text-rose-600 bg-rose-50 px-3 py-1 rounded-full mt-1 inline-block border border-rose-100">{user?.role}</span>
           </div>
         </div>
         <div className="space-y-4">

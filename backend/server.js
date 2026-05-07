@@ -38,9 +38,13 @@ const { initSocket } = require("./services/notificationService");
 // ─── Initialize Express App & Socket.io ───────────────────────
 const app = express();
 const server = http.createServer(app);
+const corsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) 
+  : ["http://localhost:3000", "http://localhost:3001"];
+
 const io = new Server(server, {
   cors: {
-    origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+    origin: corsOrigins,
     credentials: true,
   },
 });
@@ -55,7 +59,7 @@ configureCloudinary();
 // ─── Security Middleware ──────────────────────────────────────
 app.use(helmet()); // Security headers (XSS, HSTS, CSP, etc.)
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  origin: corsOrigins,
   credentials: true, // Allow cookies
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],

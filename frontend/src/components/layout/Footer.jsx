@@ -1,49 +1,91 @@
-import { Copyright } from 'lucide-react';
+import { MapPin, Globe, DollarSign } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-hairline-gray overflow-hidden pt-20">
-      <div className="max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 relative">
+    <footer className="bg-gray-50 border-t border-gray-200 pt-16 pb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center relative z-10 mb-20 gap-10">
+        {/* Main Footer Content - 4 Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-16">
           
-          {/* Left: Subtle Links */}
-          <div className="flex flex-col gap-6 w-full md:w-1/3">
-            <div className="flex gap-8 text-[14px] font-semibold text-ink-black tracking-tight">
-              <Link to="/rooms" className="hover:opacity-60 transition-opacity">Explore</Link>
-              <Link to="/about" className="hover:opacity-60 transition-opacity">About</Link>
-              <Link to="/contact" className="hover:opacity-60 transition-opacity">Contact</Link>
-            </div>
-            <div className="flex gap-8 text-[14px] font-semibold text-ash-gray tracking-tight">
-              <a href="#" className="hover:text-ink-black transition-colors">Twitter</a>
-              <a href="#" className="hover:text-ink-black transition-colors">Instagram</a>
-              <a href="#" className="hover:text-ink-black transition-colors">LinkedIn</a>
-            </div>
+          {/* Brand Column */}
+          <div className="flex flex-col gap-4">
+            <Link to="/" className="flex items-center gap-2 text-rose-500 hover:text-rose-600 transition-colors">
+              <MapPin className="w-7 h-7 fill-rose-500 text-white" />
+              <span className="text-xl font-bold tracking-tight">SettelInn</span>
+            </Link>
+            <p className="text-gray-500 text-sm leading-relaxed mt-2">
+              Discover and book the best places to stay around the world. We make finding your perfect home away from home easy and secure.
+            </p>
           </div>
 
-          {/* Center: Tagline */}
-          <div className="w-full md:w-1/3 flex justify-center text-center">
-            <h2 className="text-[28px] md:text-[32px] leading-[1.1] font-semibold text-ink-black tracking-tight max-w-[300px]">
-              The ultimate home booking experience.
-            </h2>
+          {/* Support Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-gray-900">Support</h4>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Help Center</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Safety Information</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Cancellation Options</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Contact Us</Link>
           </div>
 
-          {/* Right: Copyright Icon */}
-          <div className="w-full md:w-1/3 flex justify-start md:justify-end">
-            <Copyright className="w-12 h-12 md:w-16 md:h-16 text-ink-black stroke-[1.5]" />
+          {/* Hosting Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-gray-900">Hosting</h4>
+            <Link to="/add-room" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">List your property</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Hosting resources</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Community forum</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Host responsibility</Link>
+          </div>
+
+          {/* About Column */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-gray-900">SettelInn</h4>
+            <Link to="/about" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">About Us</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Careers</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Investors</Link>
+            <Link to="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">Terms & Privacy</Link>
           </div>
           
         </div>
 
-        {/* Bottom Section: MASSIVE Typography */}
-        <div className="w-full flex justify-center relative -mb-[4%] md:-mb-[6%] lg:-mb-[8%] pointer-events-none select-none">
-          <h1 className="text-[24vw] leading-[0.75] font-black text-ink-black tracking-tighter whitespace-nowrap">
-            SettelInn
-          </h1>
-        </div>
+        {/* Divider */}
+        <div className="w-full h-[1px] bg-gray-200 mb-6"></div>
 
+        {/* Bottom Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+          <div className="flex flex-wrap items-center gap-2 text-center md:text-left">
+            <span>© 2026 SettelInn, Inc.</span>
+            <span className="hidden md:inline">•</span>
+            <Link to="#" className="hover:text-gray-900 hover:underline">Privacy</Link>
+            <span className="hidden md:inline">•</span>
+            <Link to="#" className="hover:text-gray-900 hover:underline">Terms</Link>
+            <span className="hidden md:inline">•</span>
+            <Link to="#" className="hover:text-gray-900 hover:underline">Sitemap</Link>
+          </div>
+
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4 font-medium text-gray-900">
+              <button className="flex items-center gap-1 hover:underline">
+                <Globe className="w-4 h-4" /> English (US)
+              </button>
+              <button className="flex items-center gap-1 hover:underline">
+                <DollarSign className="w-4 h-4" /> USD
+              </button>
+            </div>
+            <div className="flex items-center gap-4">
+              <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg>
+              </a>
+              <a href="#" className="text-gray-400 hover:text-gray-900 transition-colors">
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );

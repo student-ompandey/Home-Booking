@@ -67,16 +67,12 @@ export default function Rooms() {
     <div className="bg-[#f8f8f9] min-h-screen text-black pb-24">
       <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-28 md:pt-36">
         
-        {/* Massive Editorial Header */}
-        <div className="mb-10 flex flex-col items-start">
-           <div className="flex gap-4 items-start mb-5">
-              <div className="w-[2px] h-6 bg-black rounded-full"></div>
-              <p className="text-[12px] font-bold tracking-widest uppercase text-gray-500 mt-1">EXPLORE</p>
-           </div>
-           <h1 className="text-[36px] md:text-[56px] font-bold tracking-tight text-black leading-tight">
-             Discover our <br className="hidden md:block"/>
-             <span className="inline-block bg-[#1a1a1a] text-white px-5 pt-0.5 pb-2 rounded-full align-middle shadow-md border border-black/10 mt-2 md:mt-0">Collection</span>
+        {/* Simple Header */}
+        <div className="mb-8">
+           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+             Explore properties
            </h1>
+           <p className="text-gray-500 text-lg">Find the perfect place for your next stay.</p>
         </div>
 
         {/* Filters */}
@@ -95,13 +91,13 @@ export default function Rooms() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setViewMode('list')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[14px] font-bold transition-all duration-300 shadow-sm ${viewMode === 'list' ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black border border-gray-200 hover:bg-gray-50'}`}
+              className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${viewMode === 'list' ? 'bg-rose-500 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
             >
               <Grid className="w-4 h-4" /> List
             </button>
             <button
               onClick={() => setViewMode('map')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[14px] font-bold transition-all duration-300 shadow-sm ${viewMode === 'map' ? 'bg-[#1a1a1a] text-white' : 'bg-white text-black border border-gray-200 hover:bg-gray-50'}`}
+              className={`flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-bold transition-all shadow-sm ${viewMode === 'map' ? 'bg-rose-500 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
             >
               <MapIcon className="w-4 h-4" /> Map
             </button>
@@ -161,8 +157,8 @@ export default function Rooms() {
                         onClick={() => setFilters({ ...filters, page: p })}
                         className={`w-10 h-10 text-[14px] font-bold rounded-full transition-colors ${
                           p === filters.page 
-                            ? 'bg-black text-white' 
-                            : 'text-black hover:bg-gray-100'
+                            ? 'bg-rose-500 text-white' 
+                            : 'text-gray-700 hover:bg-gray-100'
                         }`}
                       >
                         {p}
@@ -173,9 +169,9 @@ export default function Rooms() {
                   <button
                     onClick={() => setFilters({ ...filters, page: filters.page + 1 })}
                     disabled={!pagination.hasNext}
-                    className="w-10 h-10 flex items-center justify-center rounded-full border border-black text-black hover:bg-black hover:text-white disabled:opacity-30 disabled:border-gray-200 disabled:text-gray-400 disabled:hover:bg-transparent transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-30 transition-colors"
                   >
-                    <ChevronRight className="w-5 h-5 mr-0.5" />
+                    <ChevronRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
